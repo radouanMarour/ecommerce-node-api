@@ -2,8 +2,36 @@ import mongoose from 'mongoose'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
+const addressSchema = new mongoose.Schema({
+    street: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    city: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    state: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    postalCode: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    country: {
+        type: String,
+        required: true,
+        trim: true
+    }
+}, { _id: false });
+
 const userSchema = new mongoose.Schema({
-    name: {
+    username: {
         type: String,
         required: true,
         trim: true
@@ -25,21 +53,19 @@ const userSchema = new mongoose.Schema({
         enum: ['customer', 'admin'],
         default: 'customer'
     },
-    address: {
-        street: { type: String, default: '' },
-        city: { type: String, default: '' },
-        state: { type: String, default: '' },
-        postalCode: { type: String, default: '' },
-        country: { type: String, default: '' },
-    },
-    phone: {
+    address: addressSchema,
+    phoneNumber: {
         type: String,
-        default: ''
+        trim: true
     },
-    orders: {
+    orderHistory: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Order'
-    }
+    }],
+    wishlist: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product'
+    }]
 }, { timestamps: true })
 
 userSchema.pre('save', async function (next) {

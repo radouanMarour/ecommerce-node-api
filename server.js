@@ -3,6 +3,7 @@ import { connect } from 'mongoose';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from "dotenv"
+import authRoutes from './routes/authRoutes.js'
 
 dotenv.config();
 
@@ -16,6 +17,8 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use('/api/auth', authRoutes)
 
 // Connect to MongoDB
 connect("mongodb://localhost:27017/ecommerceDB")
