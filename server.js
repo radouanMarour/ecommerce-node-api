@@ -4,6 +4,9 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from "dotenv"
 import authRoutes from './routes/authRoutes.js'
+import passwordRoutes from './routes/passwordRoutes.js'
+import productRoutes from './routes/productRoutes.js';
+import categoryRoutes from './routes/categoryRoutes.js';
 
 dotenv.config();
 
@@ -19,6 +22,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/api/auth', authRoutes)
+// app.use('/api/password', passwordRoutes)
+app.use('/api/products', productRoutes);
+app.use('/api/categories', categoryRoutes);
 
 // Connect to MongoDB
 connect("mongodb://localhost:27017/ecommerceDB")

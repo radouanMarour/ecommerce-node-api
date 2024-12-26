@@ -29,7 +29,7 @@ export const registerUser = async (req, res) => {
         res.status(201).json({ message: "User created successfully" });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ errors: 'Server error' });
+        res.status(500).json({ error: 'Server error' });
     }
 };
 
@@ -56,7 +56,7 @@ export const loginUser = async (req, res) => {
         res.status(200).json({ token, user: { id: user._id, username: user.username, email: user.email, role: user.role } });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ errors: 'Server error' });
+        res.status(500).json({ error: 'Server error' });
     }
 }
 

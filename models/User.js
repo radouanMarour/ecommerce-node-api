@@ -65,7 +65,9 @@ const userSchema = new mongoose.Schema({
     wishlist: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product'
-    }]
+    }],
+    resetPasswordToken: String,
+    resetPasswordExpire: Date
 }, { timestamps: true })
 
 userSchema.pre('save', async function (next) {
