@@ -7,10 +7,6 @@ const categorySchema = new mongoose.Schema({
         unique: true,
         trim: true
     },
-    description: {
-        type: String,
-        trim: true
-    },
     parent: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
@@ -24,7 +20,7 @@ const categorySchema = new mongoose.Schema({
     ],
     image: {
         type: String,
-        default: 'https://via.placeholder.com/150'
+        default: ""
     }
 }, { timestamps: true });
 

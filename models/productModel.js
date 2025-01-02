@@ -35,10 +35,12 @@ const productSchema = new mongoose.Schema({
     },
     variants: [
         {
+            _id: false,
             color: { type: String, required: true },
             size: { type: String, required: true },
             stock: { type: Number, required: true, min: 0 },
-        }
+            price: { type: Number, default: null }
+        },
     ],
     ratings: {
         average: { type: Number, default: 0 },
