@@ -5,7 +5,7 @@ import cloudinary from "./cloudinary.js";
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
-        folder: 'ecommerce-images',
+        folder: 'uploads',
         allowed_formats: ['jpeg', 'png', 'jpg', 'webp']
     }
 })
