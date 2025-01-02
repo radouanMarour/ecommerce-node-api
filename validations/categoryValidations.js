@@ -13,16 +13,13 @@ const categorySchema = Joi.object({
         'string.empty': 'Name is required',
         'any.required': 'Name is required'
     }),
-    description: Joi.string().trim().optional().messages({
-        'string.empty': 'Description cannot be empty'
-    }),
-    parent: objectId.allow(null).optional().messages({
-        'string.empty': 'Parent must be a valid ObjectId or null'
-    }),
     subcategories: Joi.array().items(objectId).optional().messages({
         'string.empty': 'Subcategories must be an array of valid ObjectIds'
     }),
-    image: Joi.string().uri().optional().messages({
+    parent: objectId.allow(null).default(null).messages({
+        'string.empty': 'Parent must be a valid ObjectId or null'
+    }),
+    image: Joi.string().allow("").default("").messages({
         'string.uri': 'Image must be a valid URI'
     })
 });
