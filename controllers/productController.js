@@ -22,20 +22,69 @@ export const createProduct = async (req, res) => {
 // @route GET /api/products
 // @access Public
 export const getProducts = async (req, res) => {
+    const { priceMin, priceMax, size, color, sort } = req.query;
+
     try {
-        const products = await Product.find();
-        res.status(200).send(products);
+        // Build the query object
+        const query = {};
+
+        // Filter by category
+        if (req.query.category) {
+            query.category = req.query.category;
+        }
+
+        // Filter by subcategory
+        if (req.query.subcategory) {
+            query.subcategory = req.query.subcategory;
+        }
+
+        // Price range filter
+        if (priceMin || priceMax) {
+            query.price = {
+                ...(priceMin && { $gte: Number(priceMin) }),
+                ...(priceMax && { $lte: Number(priceMax) }),
+            };
+        }
+
+        // Size filter
+        if (size) {
+            query['variants.size'] = size;
+        }
+
+        // Color filter
+        if (color) {
+            query['variants.color'] = color;
+        }
+
+        // Sorting (default: no sort)
+        const sortOptions = {};
+        if (sort === 'price_asc') {
+            sortOptions.price = 1; // Ascending
+        } else if (sort === 'price_desc') {
+            sortOptions.price = -1; // Descending
+        } else if (sort === 'newest') {
+            sortOptions.createdAt = -1; // Newest first
+        }
+
+        // Fetch filtered and sorted products
+        const products = await Product.find(query).sort(sortOptions);
+
+        // Return the products
+        return res.status(200).send(products);
     } catch (error) {
-        res.status(500).send({ error: 'Server error. Please try again' });
+        console.error('Error fetching products:', error);
+        return res.status(500).send({ error: 'Server error. Please try again later.' });
     }
-}
+};
+
 
 // @desc Get a product by ID
 // @route GET /api/products/:id
 // @access Public
 export const getProductById = async (req, res) => {
+    console.log(req.params.id);
     try {
-        const product = await Product.findById(req.params.id);
+        const product = await Product.findById(req.params.id).populate('category subcategory', 'name');
         if (!product) {
             return res.status(404).send({ error: 'Product not found' });
         }
@@ -49,16 +98,20 @@ export const getProductById = async (req, res) => {
 // @route PUT /api/products/:id
 // @access Private/Admin
 export const updateProduct = async (req, res) => {
+    const propertyCount = Object.keys(req.body).length;
     try {
         const { error } = validateProduct(req.body);
-        if (error) {
+        if (error && propertyCount > 1) {
             return res.status(400).send({ error: error.details[0].message });
         }
-        const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('category subcategory', 'name');
         if (!product) {
             return res.status(404).send({ error: 'Product not found' });
         }
-        res.status(200).send({ message: `${product.name} has been updated` });
+        res.status(200).send({
+            message: `${product.name} has been updated`,
+            product
+        });
     } catch (error) {
         res.status(500).send({ error: 'Server error. Please try again' });
     }
@@ -73,7 +126,10 @@ export const deleteProduct = async (req, res) => {
         if (!product) {
             return res.status(404).send({ error: 'Product not found' });
         }
-        res.status(200).send({ message: `${product.name} has been deleted` });
+        res.status(200).send({
+            message: `${product.name} has been deleted`,
+            productId: product._id
+        });
     } catch (error) {
         res.status(500).send({ error: 'Server error. Please try again' });
     }
