@@ -59,6 +59,10 @@ const productSchema = Joi.object({
             stock: Joi.number().integer().min(0).required().messages({
                 'number.base': 'Stock must be a valid number',
                 'number.min': 'Stock cannot be negative'
+            }),
+            price: Joi.number().min(0).required().messages({
+                'number.base': 'Price must be a valid number',
+                'number.min': 'Price cannot be negative'
             })
         }))
         .optional(),
