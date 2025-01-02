@@ -10,6 +10,10 @@ export const createCategory = async (req, res) => {
         if (error) {
             return res.status(400).send({ error: error.details[0].message });
         }
+        const existingCategory = await Category.findOne({ name: req.body.name });
+        if (existingCategory) {
+            return res.status(400).send({ error: 'Category already exists' });
+        }
         const category = new Category(req.body);
         await category.save();
         if (category.parent) {
@@ -28,7 +32,7 @@ export const createCategory = async (req, res) => {
 // @access Public
 export const getCategories = async (req, res) => {
     try {
-        const categories = await Category.find();
+        const categories = await Category.find().populate('subcategories');
         res.send(categories);
     } catch (error) {
         res.status(500).send({ error: 'Server error. Please try again' });
@@ -40,7 +44,7 @@ export const getCategories = async (req, res) => {
 // @access Public
 export const getCategoryById = async (req, res) => {
     try {
-        const category = await Category.findById(req.params.id);
+        const category = await Category.findById(req.params.id).populate('subcategories');
         if (!category) {
             return res.status(404).send({ error: 'Category not found' });
         }
@@ -63,7 +67,10 @@ export const updateCategory = async (req, res) => {
         if (!category) {
             return res.status(404).send({ error: 'Category not found' });
         }
-        res.send({ message: `${category.name} has been updated` });
+        res.send({
+            message: `${category.name} has been updated`,
+            category
+        });
     } catch (error) {
         res.status(500).send({ error: 'Server error. Please try again' });
     }
@@ -85,7 +92,10 @@ export const deleteCategory = async (req, res) => {
             );
             await parentCategory.save();
         }
-        res.send({ message: `${category.name} has been deleted` });
+        res.send({
+            message: `${category.name} has been deleted`,
+            categoryId: category.id
+        });
     } catch (error) {
         res.status(500).send({ error: 'Server error. Please try again' });
     }
