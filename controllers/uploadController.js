@@ -1,16 +1,15 @@
+import { errorResponse, successResponse } from '../utils/responseHandlers.js'
+
 export const uploadSingleImage = (req, res) => {
     try {
         // After upload, Multer adds `req.file`s
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
         }
-
-        res.status(200).json({
-            message: 'File uploaded successfully',
-            fileUrl: req.file.path,
-        });
+        const fileUrl = req.file.path
+        return successResponse(res, 200, fileUrl, 'File uploaded successfully')
     } catch (error) {
-        res.status(500).json({ error: 'File upload failed', details: error.message });
+        return errorResponse(res, 500, 'Server error. Please try again');
     }
 };
 
@@ -19,16 +18,13 @@ export const uploadMultipleImages = (req, res) => {
     try {
         // After upload, Multer adds `req.files`
         if (!req.files) {
-            return res.status(400).json({ error: 'No files uploaded' });
+            return errorResponse(res, 400, 'No files uploaded');
         }
 
         const fileUrls = req.files.map(file => file.path);
+        return successResponse(res, 200, fileUrls, 'Files uploaded successfully')
 
-        res.status(200).json({
-            message: 'Files uploaded successfully',
-            fileUrls,
-        });
     } catch (error) {
-        res.status(500).json({ error: 'Files upload failed', details: error.message });
+        return errorResponse(res, 500, 'Server error. Please try again');
     }
 };

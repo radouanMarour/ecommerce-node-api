@@ -1,5 +1,7 @@
 import Category from '../models/categoryModel.js';
 import { validateCategory } from '../validations/categoryValidations.js';
+import { errorResponse, successResponse } from '../utils/responseHandlers.js'
+
 
 // @desc Create a new category
 // @route POST /api/categories
@@ -8,11 +10,11 @@ export const createCategory = async (req, res) => {
     try {
         const { error } = validateCategory(req.body);
         if (error) {
-            return res.status(400).send({ error: error.details[0].message });
+            return errorResponse(res, 400, error.details[0].message);
         }
         const existingCategory = await Category.findOne({ name: req.body.name });
         if (existingCategory) {
-            return res.status(400).send({ error: 'Category already exists' });
+            return errorResponse(res, 400, 'Category already exists');
         }
         const category = new Category(req.body);
         await category.save();
@@ -21,9 +23,10 @@ export const createCategory = async (req, res) => {
             parentCategory.subcategories.push(category._id);
             await parentCategory.save();
         }
-        res.status(201).send({ message: `${category.name} has been created` });
+        return successResponse(res, 201, category, `${category.name} has been created`);
     } catch (error) {
-        res.status(500).send({ error: 'Server error. Please try again' });
+        console.error('Create category error:', error);
+        return errorResponse(res, 500, 'Server error. Please try again');
     }
 }
 
@@ -33,9 +36,10 @@ export const createCategory = async (req, res) => {
 export const getCategories = async (req, res) => {
     try {
         const categories = await Category.find().populate('subcategories');
-        res.send(categories);
+        return successResponse(res, 200, categories);
     } catch (error) {
-        res.status(500).send({ error: 'Server error. Please try again' });
+        console.error('Get categories error:', error);
+        return errorResponse(res, 500, 'Server error. Please try again');
     }
 }
 
@@ -46,11 +50,12 @@ export const getCategoryById = async (req, res) => {
     try {
         const category = await Category.findById(req.params.id).populate('subcategories');
         if (!category) {
-            return res.status(404).send({ error: 'Category not found' });
+            return errorResponse(res, 404, 'Category not found');
         }
-        res.send(category);
+        return successResponse(res, 200, category);
     } catch (error) {
-        res.status(500).send({ error: 'Server error. Please try again' });
+        console.error('Get category by ID error:', error);
+        return errorResponse(res, 500, 'Server error. Please try again');
     }
 }
 
@@ -61,18 +66,16 @@ export const updateCategory = async (req, res) => {
     try {
         const { error } = validateCategory(req.body);
         if (error) {
-            return res.status(400).send({ error: error.details[0].message });
+            return errorResponse(res, 400, error.details[0].message);
         }
         const category = await Category.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!category) {
-            return res.status(404).send({ error: 'Category not found' });
+            return errorResponse(res, 404, 'Category not found');
         }
-        res.send({
-            message: `${category.name} has been updated`,
-            category
-        });
+        return successResponse(res, 200, category, `${category.name} has been updated`);
     } catch (error) {
-        res.status(500).send({ error: 'Server error. Please try again' });
+        console.error('Update category error:', error);
+        return errorResponse(res, 500, 'Server error. Please try again');
     }
 }
 
@@ -83,7 +86,7 @@ export const deleteCategory = async (req, res) => {
     try {
         const category = await Category.findByIdAndDelete(req.params.id);
         if (!category) {
-            return res.status(404).send({ error: 'Category not found' });
+            return errorResponse(res, 404, 'Category not found');
         }
         if (category.parent) {
             const parentCategory = await Category.findById(category.parent);
@@ -92,12 +95,10 @@ export const deleteCategory = async (req, res) => {
             );
             await parentCategory.save();
         }
-        res.send({
-            message: `${category.name} has been deleted`,
-            categoryId: category.id
-        });
+        return successResponse(res, 200, { categoryId: category._id }, `${category.name} has been deleted`);
     } catch (error) {
-        res.status(500).send({ error: 'Server error. Please try again' });
+        console.error('Delete category error:', error);
+        return errorResponse(res, 500, 'Server error. Please try again');
     }
 }
 

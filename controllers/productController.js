@@ -1,5 +1,6 @@
 import Product from "../models/productModel.js";
 import { validateProduct } from "../validations/productValidations.js";
+import { errorResponse, successResponse } from '../utils/responseHandlers.js'
 
 // @desc Create a new product
 // @route POST /api/products
@@ -8,13 +9,14 @@ export const createProduct = async (req, res) => {
     try {
         const { error } = validateProduct(req.body);
         if (error) {
-            return res.status(400).send({ error: error.details[0].message });
+            return errorResponse(res, 400, error.details[0].message);
         }
         const product = new Product(req.body);
         await product.save();
-        res.status(201).send({ message: `${product.name} has been created` });
+        return successResponse(res, 201, product, `${product.name} has been created`);
     } catch (error) {
-        res.status(500).send({ error: 'Server error. Please try again' });
+        console.error('Create product error:', error);
+        return errorResponse(res, 500, 'Server error. Please try again');
     }
 }
 
@@ -70,10 +72,10 @@ export const getProducts = async (req, res) => {
         const products = await Product.find(query).sort(sortOptions);
 
         // Return the products
-        return res.status(200).send(products);
+        return successResponse(res, 200, products);
     } catch (error) {
         console.error('Error fetching products:', error);
-        return res.status(500).send({ error: 'Server error. Please try again later.' });
+        return errorResponse(res, 500, 'Server error. Please try again later.');
     }
 };
 
@@ -82,15 +84,16 @@ export const getProducts = async (req, res) => {
 // @route GET /api/products/:id
 // @access Public
 export const getProductById = async (req, res) => {
-    console.log(req.params.id);
     try {
-        const product = await Product.findById(req.params.id).populate('category subcategory', 'name');
+        const product = await Product.findById(req.params.id)
+            .populate('category subcategory', 'name')
+            .populate('reviews.user', 'username');
         if (!product) {
-            return res.status(404).send({ error: 'Product not found' });
+            return errorResponse(res, 404, 'Product not fount')
         }
-        res.status(200).send(product);
+        return successResponse(res, 200, product)
     } catch (error) {
-        res.status(500).send({ error: 'Server error. Please try again' });
+        return errorResponse(res, 500, 'Server error. Please try again');
     }
 }
 
@@ -102,18 +105,16 @@ export const updateProduct = async (req, res) => {
     try {
         const { error } = validateProduct(req.body);
         if (error && propertyCount > 1) {
-            return res.status(400).send({ error: error.details[0].message });
+            return errorResponse(res, 400, error.details[0].message);
         }
         const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('category subcategory', 'name');
         if (!product) {
-            return res.status(404).send({ error: 'Product not found' });
+            return errorResponse(res, 404, 'Product not found');
         }
-        res.status(200).send({
-            message: `${product.name} has been updated`,
-            product
-        });
+        return successResponse(res, 200, product, `${product.name} has been updated`);
     } catch (error) {
-        res.status(500).send({ error: 'Server error. Please try again' });
+        console.error('Update product error:', error);
+        return errorResponse(res, 500, 'Server error. Please try again');
     }
 }
 
@@ -124,14 +125,12 @@ export const deleteProduct = async (req, res) => {
     try {
         const product = await Product.findByIdAndDelete(req.params.id);
         if (!product) {
-            return res.status(404).send({ error: 'Product not found' });
+            return errorResponse(res, 404, 'Product not found');
         }
-        res.status(200).send({
-            message: `${product.name} has been deleted`,
-            productId: product._id
-        });
+        return successResponse(res, 200, { productId: product._id }, `${product.name} has been deleted`);
     } catch (error) {
-        res.status(500).send({ error: 'Server error. Please try again' });
+        console.error('Delete product error:', error);
+        return errorResponse(res, 500, 'Server error. Please try again');
     }
 }
 
@@ -141,9 +140,49 @@ export const deleteProduct = async (req, res) => {
 export const getFeaturedProducts = async (req, res) => {
     try {
         const products = await Product.find({ isFeatured: true });
-        res.status(200).send(products);
+        return successResponse(res, 200, products)
     } catch (error) {
-        res.status(500).send({ error: 'Server error. Please try again' });
+        return errorResponse(res, 500, 'Server error. Please try again');
     }
 }
+
+// @desc Add Review for a product
+// @route PUT /api/products/:id/reviews
+// @access Private
+export const addProductReview = async (req, res) => {
+    try {
+        if (!req.user) {
+            return errorResponse(res, 401, 'User not authenticated');
+        }
+        const { rating, comment } = req.body;
+        const product = await Product.findById(req.params.id);
+
+        if (!product) {
+            return errorResponse(res, 404, 'Product not found');
+        }
+        const review = {
+            user: req.user._id,
+            rating: Number(rating),
+            comment,
+        };
+
+        const alreadyReviewed = product.reviews.find(
+            (r) => r.user.toString() === req.user._id.toString()
+        );
+
+        if (alreadyReviewed) {
+            return errorResponse(res, 400, 'Product already reviewed');
+        }
+
+        product.reviews.push(review);
+        product.ratings.count = product.reviews.length;
+        product.ratings.average = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length;
+
+        await product.save();
+        return successResponse(res, 201, product, 'Review added successfully');
+    } catch (error) {
+        console.error('Add review error:', error);
+        return errorResponse(res, 500, 'Server error. Please try again');
+    }
+};
 

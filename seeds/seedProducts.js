@@ -4,85 +4,147 @@ import Category from '../models/categoryModel.js';
 
 const products = [
     {
-        name: "Classic White T-Shirt",
-        description: "A high-quality white t-shirt made from 100% cotton.",
-        price: 19.99,
-        stock: 50,
+        name: "Classic Cotton T-Shirt",
+        description: "Comfortable everyday basic t-shirt made from 100% cotton",
         category: "Clothing",
         subcategory: "T-Shirts",
-        images: [
-            "https://placehold.co/600x400",
-            "https://placehold.co/600x400"
-        ],
+        price: 19.99, // Lowest variant price
+        stock: 150, // Will be calculated from variants
+        images: ["https://placehold.co/400x300", "https://placehold.co/400x300"],
         variants: [
-            { color: "White", size: "M", stock: 20 },
-            { color: "White", size: "L", stock: 30 }
+            { color: "White", size: "S", price: 19.99, stock: 50 },
+            { color: "White", size: "M", price: 19.99, stock: 60 },
+            { color: "Black", size: "L", price: 21.99, stock: 40 }
         ]
     },
     {
-        name: "Slim Fit Jeans",
-        description: "Stylish slim-fit jeans with a modern cut.",
-        price: 49.99,
-        stock: 30,
-        category: "Clothing",
-        subcategory: "Jeans",
-        images: [
-            "https://placehold.co/600x400",
-            "https://placehold.co/600x400"
-        ],
-        variants: [
-            { color: "Blue", size: "32", stock: 10 },
-            { color: "Black", size: "34", stock: 20 }
-        ]
-    },
-    {
-        name: "Running Sneakers",
-        description: "Lightweight sneakers designed for running and training.",
-        price: 89.99,
-        stock: 20,
+        name: "Running Pro Sneakers",
+        description: "Lightweight running shoes with advanced cushioning",
         category: "Footwear",
         subcategory: "Running Shoes",
-        images: [
-            "https://placehold.co/600x400",
-            "https://placehold.co/600x400"
-        ],
+        price: 89.99, // Lowest variant price
+        stock: 120,
+        images: ["https://placehold.co/400x300", "https://placehold.co/400x300"],
         variants: [
-            { color: "Red", size: "9", stock: 10 },
-            { color: "Blue", size: "10", stock: 10 }
+            { color: "Blue", size: "40", price: 89.99, stock: 40 },
+            { color: "Red", size: "42", price: 89.99, stock: 45 },
+            { color: "Black", size: "44", price: 94.99, stock: 35 }
         ]
     },
     {
-        name: "Leather Wallet",
-        description: "Premium leather wallet with multiple compartments.",
-        price: 29.99,
-        stock: 40,
+        name: "Premium Leather Belt",
+        description: "Genuine leather belt with classic buckle",
         category: "Accessories",
-        subcategory: "Wallets",
-        images: [
-            "https://placehold.co/600x400",
-            "https://placehold.co/600x400"
-        ],
+        subcategory: "Belts",
+        price: 34.99, // Lowest variant price
+        stock: 90,
+        images: ["https://placehold.co/400x300", "https://placehold.co/400x300"],
         variants: [
-            { color: "Brown", size: "One Size", stock: 40 }
+            { color: "Brown", size: "32", price: 34.99, stock: 30 },
+            { color: "Black", size: "34", price: 34.99, stock: 30 },
+            { color: "Tan", size: "36", price: 36.99, stock: 30 }
         ]
     },
     {
-        name: "Sports Hoodie",
-        description: "Comfortable hoodie perfect for workouts and casual wear.",
-        price: 39.99,
-        stock: 25,
+        name: "Denim Blue Jeans",
+        description: "Classic fit denim jeans with stretch comfort",
+        category: "Clothing",
+        subcategory: "Jeans",
+        price: 59.99, // Lowest variant price
+        stock: 100,
+        images: ["https://placehold.co/400x300", "https://placehold.co/400x300"],
+        variants: [
+            { color: "Light Blue", size: "30x32", price: 59.99, stock: 35 },
+            { color: "Dark Blue", size: "32x32", price: 59.99, stock: 35 },
+            { color: "Black", size: "34x32", price: 64.99, stock: 30 }
+        ]
+    },
+    {
+        name: "Sport Digital Watch",
+        description: "Water-resistant digital watch with multiple features",
+        category: "Accessories",
+        subcategory: "Watches",
+        price: 129.99, // Lowest variant price
+        stock: 75,
+        images: ["https://placehold.co/400x300", "https://placehold.co/400x300"],
+        variants: [
+            { color: "Black", size: "Standard", price: 129.99, stock: 25 },
+            { color: "Silver", size: "Standard", price: 134.99, stock: 25 },
+            { color: "Gold", size: "Standard", price: 139.99, stock: 25 }
+        ]
+    },
+    {
+        name: "Winter Wool Coat",
+        description: "Warm wool blend coat perfect for winter",
+        category: "Clothing",
+        subcategory: "Coats",
+        price: 149.99, // Lowest variant price
+        stock: 60,
+        images: ["https://placehold.co/400x300", "https://placehold.co/400x300"],
+        variants: [
+            { color: "Navy", size: "S", price: 149.99, stock: 20 },
+            { color: "Grey", size: "M", price: 149.99, stock: 20 },
+            { color: "Black", size: "L", price: 154.99, stock: 20 }
+        ]
+    },
+    {
+        name: "Leather Boots",
+        description: "Classic leather boots with durable sole",
+        category: "Footwear",
+        subcategory: "Boots",
+        price: 99.99, // Lowest variant price
+        stock: 90,
+        images: ["https://placehold.co/400x300", "https://placehold.co/400x300"],
+        variants: [
+            { color: "Brown", size: "41", price: 99.99, stock: 30 },
+            { color: "Black", size: "43", price: 99.99, stock: 30 },
+            { color: "Tan", size: "45", price: 104.99, stock: 30 }
+        ]
+    },
+    {
+        name: "Designer Sunglasses",
+        description: "UV protected stylish sunglasses",
+        category: "Accessories",
+        subcategory: "Sunglasses",
+        price: 79.99, // Lowest variant price
+        stock: 60,
+        images: ["https://placehold.co/400x300", "https://placehold.co/400x300"],
+        variants: [
+            { color: "Black", size: "Standard", price: 79.99, stock: 20 },
+            { color: "Tortoise", size: "Standard", price: 79.99, stock: 20 },
+            { color: "Gold", size: "Standard", price: 84.99, stock: 20 }
+        ]
+    },
+    {
+        name: "Casual Slip-Ons",
+        description: "Comfortable casual slip-on shoes",
+        category: "Footwear",
+        subcategory: "Slip-Ons",
+        price: 49.99, // Lowest variant price
+        stock: 90,
+        images: ["https://placehold.co/400x300", "https://placehold.co/400x300"],
+        variants: [
+            { color: "Grey", size: "40", price: 49.99, stock: 30 },
+            { color: "Navy", size: "42", price: 49.99, stock: 30 },
+            { color: "Black", size: "44", price: 54.99, stock: 30 }
+        ]
+    },
+    {
+        name: "Cotton Hoodie",
+        description: "Soft cotton blend hoodie with front pocket",
         category: "Clothing",
         subcategory: "Hoodies",
-        images: [
-            "https://placehold.co/600x400",
-            "https://placehold.co/600x400"
-        ],
+        price: 44.99, // Lowest variant price
+        stock: 120,
+        images: ["https://placehold.co/400x300", "https://placehold.co/400x300"],
         variants: [
-            { color: "Gray", size: "M", stock: 15 },
-            { color: "Gray", size: "L", stock: 10 }
+            { color: "Grey", size: "S", price: 44.99, stock: 40 },
+            { color: "Black", size: "M", price: 44.99, stock: 40 },
+            { color: "Navy", size: "L", price: 49.99, stock: 40 }
         ]
     }
 ];
+
 
 const seedProducts = async () => {
     try {
@@ -105,12 +167,15 @@ const seedProducts = async () => {
                 continue;
             }
 
+            // Calculate total stock from variants
+            const totalStock = product.variants.reduce((sum, variant) => sum + variant.stock, 0);
+
             // Create and save the product
             const productDoc = new Product({
                 name: product.name,
                 description: product.description,
                 price: product.price,
-                stock: product.stock,
+                stock: totalStock, // Set total stock based on variants
                 category: category._id, // Reference the category ID
                 subcategory: subcategory ? subcategory._id : null, // Reference the subcategory ID if available
                 images: product.images,

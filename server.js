@@ -7,6 +7,9 @@ import authRoutes from './routes/authRoutes.js'
 import productRoutes from './routes/productRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import cartRoutes from './routes/cartRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
 
 
 dotenv.config();
@@ -16,7 +19,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-    origin: process.env.ORIGIN_URL || "http://localhost:5173",
+    origin: process.env.ORIGIN_URL || "http://localhost:3000",
     credentials: true
 }));
 app.use(bodyParser.json());
@@ -26,6 +29,10 @@ app.use('/api/auth', authRoutes)
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/orders', orderRoutes);
+app.use("/api", paymentRoutes);
+
 
 // Connect to MongoDB
 connect("mongodb://localhost:27017/ecommerceDB")

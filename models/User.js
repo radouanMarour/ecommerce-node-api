@@ -84,10 +84,9 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
 userSchema.methods.generateToken = function () {
     const payload = {
         id: this._id,
-        role: this.role
     }
 
-    const token = jwt.sign(payload, process.env.SECRET_KEY)
+    const token = jwt.sign(payload, process.env.JWT_SECRET)
 
     return token
 }

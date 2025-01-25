@@ -6,29 +6,19 @@ const categories = [
         name: "Clothing",
         subcategories: [
             "T-Shirts",
-            "Polo Shirts",
             "Shirts",
             "Hoodies",
             "Sweaters",
             "Jeans",
-            "Chinos",
-            "Joggers",
-            "Shorts",
             "Jackets",
             "Coats",
-            "Blazers",
-            "Gym Wear",
-            "Running Gear"
         ]
     },
     {
         name: "Footwear",
         subcategories: [
             "Sneakers",
-            "Loafers",
             "Slip-Ons",
-            "Oxfords",
-            "Derbies",
             "Brogues",
             "Running Shoes",
             "Training Shoes",
