@@ -35,7 +35,7 @@ app.use("/api", paymentRoutes);
 
 
 // Connect to MongoDB
-connect("mongodb://localhost:27017/ecommerceDB")
+connect(process.env.MONGO_URI || "mongodb://localhost:27017/ecommerceDB")
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error(err));
 
