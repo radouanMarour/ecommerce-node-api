@@ -102,3 +102,37 @@ export const updateUserProfile = async (req, res) => {
         return errorResponse(res, 500, 'Server error');
     }
 };
+
+/**
+ * @desc    Get all users
+ * @route   GET /api/auth/users
+ * @access  Private/Admin
+ */
+export const getUsers = async (req, res) => {
+    try {
+        const users = await User.find({}).select('-password');
+        return successResponse(res, 200, users);
+    } catch (err) {
+        console.error(err);
+        return errorResponse(res, 500, 'Server error');
+    }
+};
+
+/**
+ * @desc    Delete user
+ * @route   DELETE /api/auth/users/:id
+ * @access  Private/Admin
+ */
+export const deleteUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return errorResponse(res, 404, 'User not found');
+        }
+        await user.deleteOne();
+        return successResponse(res, 200, { userId: user._id }, 'User deleted successfully');
+    } catch (err) {
+        console.error(err);
+        return errorResponse(res, 500, 'Server error');
+    }
+};

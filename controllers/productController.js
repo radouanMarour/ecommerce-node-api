@@ -1,4 +1,5 @@
 import Product from "../models/productModel.js";
+import Category from "../models/categoryModel.js";
 import { validateProduct } from "../validations/productValidations.js";
 import { errorResponse, successResponse } from '../utils/responseHandlers.js'
 
@@ -32,12 +33,30 @@ export const getProducts = async (req, res) => {
 
         // Filter by category
         if (req.query.category) {
-            query.category = req.query.category;
+            const category = await Category.findOne({
+                name: { $regex: new RegExp(req.query.category, "i") }
+            });
+            if (category) {
+                query.category = category._id;
+            }
         }
 
         // Filter by subcategory
         if (req.query.subcategory) {
-            query.subcategory = req.query.subcategory;
+            const subcategory = await Category.findOne({
+                name: { $regex: new RegExp(req.query.subcategory, "i") }
+            });
+            if (subcategory) {
+                query.subcategory = subcategory._id;
+            }
+
+        }
+
+        if (req.query.search) {
+            query.$or = [
+                { name: { $regex: new RegExp(req.query.search, "i") } },
+                { description: { $regex: new RegExp(req.query.search, "i") } }
+            ];
         }
 
         // Price range filter
@@ -67,7 +86,6 @@ export const getProducts = async (req, res) => {
         } else if (sort === 'newest') {
             sortOptions.createdAt = -1; // Newest first
         }
-
         // Fetch filtered and sorted products
         const products = await Product.find(query).sort(sortOptions);
 

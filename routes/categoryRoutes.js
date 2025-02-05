@@ -10,7 +10,7 @@ router.route('/')
     .get(categoryController.getCategories);
 
 router.route('/:id')
-    .get(auth, admin, categoryController.getCategoryById)
+    .get(categoryController.getCategoryById)
     .put(auth, admin, categoryController.updateCategory)
     .delete(auth, admin, categoryController.deleteCategory);
 
